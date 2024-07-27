@@ -1,6 +1,7 @@
 #include "wx/wx.h"
 #include "wx/slider.h"
 #include <wx/event.h>
+#include "wx/button.h"
 #include <iostream>
 #include "SynthManager.h"
 #include "AudioStream.h"
@@ -9,13 +10,15 @@ class MyFrame : public wxFrame
 public:
     MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size);
     void StartAudio();
+    void StopAudio();
 
 
 private:
     SynthManager::Manager manager;
     AudioStream::Runner runner;
     void OnSlChanged(wxCommandEvent &event);
-    bool running = true;
+    void StartStopAudio(wxCommandEvent &event);
+    bool running = false;
     wxStaticText *label10 = new wxStaticText(this, 20010, "50");
     wxSlider* sliders[8]={
         new wxSlider(this,10001,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
@@ -27,6 +30,8 @@ private:
         new wxSlider(this,10007,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
         new wxSlider(this,10008,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator)
     };
+    wxButton* startStopButton = new wxButton(this, 30001, "start audio");
+    wxButton* modulationButton = new wxButton(this, 30002, "mod wave");
 };
 
 MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) : wxFrame(NULL, wxID_ANY, title, pos, size)
@@ -44,6 +49,9 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
         grid->Add(sliders[x],1, wxEXPAND | wxALL);
     }
 
+    //bind buttons
+    startStopButton->Bind(wxEVT_BUTTON, &MyFrame::StartStopAudio, this);
+
     grid->Add(new wxStaticText(this, 20008, ""));
     grid->Add(new wxStaticText(this, 20002, "time"));
     grid->Add(new wxStaticText(this, 20003, "damp"));
@@ -55,6 +63,9 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
 
     grid->Add(new wxStaticText(this, 20008, "Value:"));
     grid->Add(label10, 1, wxEXPAND | wxALL);
+    grid->Add(startStopButton);
+    // grid->Add();
+    // grid->Add(modulationButton);
 
     this->SetSizer(grid);
     grid->Layout();
@@ -64,9 +75,21 @@ void MyFrame::StartAudio()
 {
     // start reverb engine
     runner.SetManager(&manager);
-    runner.Open();
+    //runner.Open();
 }
-
+void MyFrame::StartStopAudio(wxCommandEvent &event)
+{
+    if(running)
+    {
+        runner.Terminate();
+        running = false;
+        startStopButton->SetLabel("start audio");
+    }else{
+        runner.Open();
+        running = true;
+        startStopButton->SetLabel("stop audio");
+    }
+}
 void MyFrame::OnSlChanged(wxCommandEvent &event)
 {
     int slider = event.GetId() - 10001;
