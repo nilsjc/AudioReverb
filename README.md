@@ -2,7 +2,7 @@
 ### based on experiments with the "software synth test bed" repository
 In this repository you will find a stand alone audio reverb based on the well-known Dattorro reverb.<br>
 [Read more about the reverb here!](https://ccrma.stanford.edu/~dattorro/EffectDesignPart1.pdf)<br>
-A compiled program is available in the folder "readymade". Try it out.<br> 
+A compiled program is available in the root "reverb.exe". Try it out.<br> 
 <br>
 I am using the [PortAudio sound API](https://www.portaudio.com/), made by Ross Bencina.<br>
 The GUI is based on WXWidgets<br>
