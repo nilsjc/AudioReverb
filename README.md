@@ -1,4 +1,5 @@
 # Audio reverb 
+![Alt text](reverb.PNG?raw=true "Work of progress")<br>
 ### based on experiments with the "software synth test bed" repository
 In this repository you will find a stand alone audio reverb based on the well-known Dattorro reverb.<br>
 [Read more about the reverb here!](https://ccrma.stanford.edu/~dattorro/EffectDesignPart1.pdf)<br>
