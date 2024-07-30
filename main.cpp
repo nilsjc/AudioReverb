@@ -36,6 +36,10 @@ private:
 
 MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) : wxFrame(NULL, wxID_ANY, title, pos, size)
 {
+    // Related to precalculations in audio engine
+    manager.Init();
+
+    // Wxwidgets related stuff
     wxGridSizer *grid = new wxGridSizer(3, 8, 0, 0);
     // bind sliders to function
     for(int x=0; x <8; x++)
@@ -52,13 +56,13 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     //bind buttons
     startStopButton->Bind(wxEVT_BUTTON, &MyFrame::StartStopAudio, this);
 
-    grid->Add(new wxStaticText(this, 20008, ""));
+    grid->Add(new wxStaticText(this, 20001, ""));
     grid->Add(new wxStaticText(this, 20002, "time"));
     grid->Add(new wxStaticText(this, 20003, "damp"));
-    grid->Add(new wxStaticText(this, 20004, "diffusion"));
-    grid->Add(new wxStaticText(this, 20005, ""));
-    grid->Add(new wxStaticText(this, 20006, ""));
-    grid->Add(new wxStaticText(this, 20007, ""));
+    grid->Add(new wxStaticText(this, 20004, "diffsn"));
+    grid->Add(new wxStaticText(this, 20005, "LFO1 f"));
+    grid->Add(new wxStaticText(this, 20006, "LFO2 f"));
+    grid->Add(new wxStaticText(this, 20007, "depth"));
     grid->Add(new wxStaticText(this, 20008, ""));
 
     grid->Add(new wxStaticText(this, 20008, "Value:"));
@@ -101,25 +105,47 @@ void MyFrame::OnSlChanged(wxCommandEvent &event)
             if(value==100)value=99;
             float timev = value/100.0;
             manager.SetTime(timev);
+            label10->SetLabel(std::to_string(timev));
         }
             break;
         case 2:
         {
             float dampv = value/100.0;
             manager.SetDamp(dampv);
+            label10->SetLabel(std::to_string(dampv));
         }
             break;
         case 3:
         {
             float diffusionv = value/100.0;
             manager.SetDiffusion(diffusionv);
+            label10->SetLabel(std::to_string(diffusionv));
         }
             break;
+        case 4:
+        {
+            float lfo1freq = value/5.0;
+            manager.SetLFO1(lfo1freq);
+            label10->SetLabel(std::to_string(lfo1freq));
+        }
+            break;
+        case 5:
+        {
+            float lfo2freq = value/5.0;
+            manager.setLFO2(lfo2freq);
+            label10->SetLabel(std::to_string(lfo2freq));
+        }
+            break;
+        case 6:
+        {
+            float modAmp = value/250.0;
+            manager.setMod(modAmp);
+            label10->SetLabel(std::to_string(modAmp));
+        }
         
         default:
             break;
     }
-    label10->SetLabel(std::to_string(value));
     event.Skip();
 }
 

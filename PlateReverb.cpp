@@ -1,6 +1,7 @@
 #include "PlateReverb.h" 
 #include <cstdlib> 
 #include <iostream> 
+#include <math.h>
 const int N=100;
 // all pass filters
 int ap1play=1, ap2play=1, ap3play=2, ap4play=2;
@@ -34,14 +35,14 @@ void PlateR::Reverb::Input(float inp)
 
     // pipe1: mod apf -> delay -> lpf -> apf -> delay
     float pipe1inp = inp + (pipe2 * Gain);
-    pipe1 = allPass(pipe1inp, 0.7, mod1ring, mod1play, mod1rec);
+    pipe1 = allPass(pipe1inp, (0.7 + modWave1), mod1ring, mod1play, mod1rec);
     pipe1 = longDelay(pipe1, ld1ring, ld1play, ld1rec);
     pipe1 = loPass1(pipe1, Damping);
     pipe1 = allPass(pipe1, 0.5, ap5ring, ap5play, ap5rec);
     pipe1 = longDelay(pipe1, ld2ring, ld2play, ld2rec);
     // pipe2: mod apf -> delay -> lpf -> apf -> delay
     float pipe2inp = inp + (pipe1 * Gain);
-    pipe2 = allPass(pipe2inp, 0.7, mod2ring, mod2play, mod2rec);
+    pipe2 = allPass(pipe2inp, (0.7 + modWave2), mod2ring, mod2play, mod2rec);
     pipe2 = longDelay(pipe2, ld3ring, ld3play, ld3rec);
     pipe2 = loPass2(pipe2, Damping);
     pipe2 = allPass(pipe2, 0.5, ap6ring, ap6play, ap6rec);
@@ -193,10 +194,31 @@ void PlateR::Reverb::Tick()
     if(rightTap7>4640)rightTap7=0;
 }
 
+void PlateR::Reverb::LoTick()
+{
+    // LFO 1 & 2 generation
+    modWave1 = sin(angle1) * LFO1ampl;
+    angle1 += modWaveRad * LFO1freq;
+    if(angle1>doublePI){
+        angle1 -= doublePI;
+    }
+
+    modWave2 = sin(angle2) * LFO2ampl;
+    angle2 += modWaveRad * LFO2freq;
+    if(angle2>doublePI){
+        angle2 -= doublePI;
+    }
+}
+
+void PlateR::Reverb::CalculateVars()
+{
+    modWaveRad = (2 * M_PI) / Sample_Rate;
+}
 
 float PlateR::Reverb::allPass(float input, float gain, 
     float(&delayLine)[], int& play, int& rec)
 {
+    if(gain>1.0)gain=1.0;
     float old = delayLine[play];
     input += (old * gain);
     delayLine[rec]=input;

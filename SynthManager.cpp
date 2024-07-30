@@ -21,6 +21,11 @@ void SynthManager::Manager::Tick()
     reverb.ModTick();
 }
 
+void SynthManager::Manager::LoTick()
+{
+    reverb.LoTick();
+}
+
 void SynthManager::Manager::SetTime(float g)
 {
     reverb.Gain = g;
@@ -34,4 +39,25 @@ void SynthManager::Manager::SetDamp(float d)
 void SynthManager::Manager::SetDiffusion(float d)
 {
     reverb.Diffusion = d;
+}
+
+void SynthManager::Manager::SetLFO1(float l)
+{
+    reverb.LFO1freq = l;
+}
+
+void SynthManager::Manager::setLFO2(float l)
+{
+    reverb.LFO2freq = l;
+}
+
+void SynthManager::Manager::setMod(float m)
+{
+    reverb.LFO1ampl = m;
+    reverb.LFO2ampl = m;
+}
+
+void SynthManager::Manager::Init()
+{
+    reverb.CalculateVars();
 }

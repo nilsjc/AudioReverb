@@ -24,6 +24,7 @@ int AudioStream::Runner::paUserCallback(const void *inputBuffer, void *outputBuf
     }
     else
     {
+        manager->LoTick();
         //create signal
         for( j=0; j<framesPerBuffer; j++ )
         {
