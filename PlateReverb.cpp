@@ -13,9 +13,11 @@ float ap5ring[3931], ap6ring[2664];
 int ap5play=3, ap6play=3;// was 2
 int ap5rec=0,ap6rec=0;
 // Modulated all pass filters
-float mod1ring[1343], mod2ring[995];
+float mod1ring[13430], mod2ring[13430];
+const int mod1ringSize = 13430;
+const int mod2ringSize = 13430;
 int mod1play=4, mod1rec=0, mod2play=4, mod2rec=0;
-int mod1max = 1342, mod2max = 994, direction=0;
+int mod1max = 13429, mod2max = 13429, direction=0;
 // long delays
 int ld1play=1, ld2play=1, ld3play=1, ld4play=1;
 int ld1rec=0, ld2rec=0, ld3rec=0, ld4rec=0;
@@ -35,14 +37,16 @@ void PlateR::Reverb::Input(float inp)
 
     // pipe1: mod apf -> delay -> lpf -> apf -> delay
     float pipe1inp = inp + (pipe2 * Gain);
-    pipe1 = allPass(pipe1inp, (0.7 + modWave1), mod1ring, mod1play, mod1rec);
+    //pipe1 = allPass(pipe1inp, (0.7 + modWave1), mod1ring, mod1play, mod1rec);
+    pipe1 = modAllPass(pipe1inp, 0.7, mod1ring, mod1play, mod1rec, mod1ringSize, delayInSamples1);
     pipe1 = longDelay(pipe1, ld1ring, ld1play, ld1rec);
     pipe1 = loPass1(pipe1, Damping);
     pipe1 = allPass(pipe1, 0.5, ap5ring, ap5play, ap5rec);
     pipe1 = longDelay(pipe1, ld2ring, ld2play, ld2rec);
     // pipe2: mod apf -> delay -> lpf -> apf -> delay
     float pipe2inp = inp + (pipe1 * Gain);
-    pipe2 = allPass(pipe2inp, (0.7 + modWave2), mod2ring, mod2play, mod2rec);
+    //pipe2 = allPass(pipe2inp, (0.7 + modWave2), mod2ring, mod2play, mod2rec);
+    pipe2 = modAllPass(pipe1inp, 0.7, mod2ring, mod2play, mod2rec, mod2ringSize, delayInSamples2);
     pipe2 = longDelay(pipe2, ld3ring, ld3play, ld3rec);
     pipe2 = loPass2(pipe2, Damping);
     pipe2 = allPass(pipe2, 0.5, ap6ring, ap6play, ap6rec);
@@ -208,6 +212,9 @@ void PlateR::Reverb::LoTick()
     if(angle2>doublePI){
         angle2 -= doublePI;
     }
+
+    delayInSamples1 = calculateTime(modWave1 + allPassMilliSec_1, mod1play, mod1rec, mod1ringSize);
+    delayInSamples2 = calculateTime(modWave2 + allPassMilliSec_2, mod2play, mod2rec, mod2ringSize);
 }
 
 void PlateR::Reverb::CalculateVars()
@@ -224,6 +231,40 @@ float PlateR::Reverb::allPass(float input, float gain,
     delayLine[rec]=input;
     input *= -gain;
     return input + old;
+}
+
+float PlateR::Reverb::modAllPass(float input, float gain, float(&delayLine)[], int& play, int& rec, int delaySize, float &delayInSamples)
+{
+    if(gain>1.0)gain=1.0;
+    float old = delayLine[play];
+    if(play==rec && delayInSamples < 1.00){
+        old = input;
+    }
+    int play_1 = play - 1;
+    if(play_1 < 0){
+        play_1 = delaySize-1;
+    }
+    float yn_1 = delayLine[play_1];
+    // interpolate (0,yn) and (1,yn_1)by the amount fracdelay
+    float fracDelay = delayInSamples - (int)delayInSamples;
+    float finterp = lerp(old, yn_1, fracDelay);
+    if(delayInSamples == 0)
+    {
+        old = input;
+    }else{
+        old = finterp;
+    }
+    input += (old * gain);
+    delayLine[rec]=input;
+    input *= -gain;
+    return input + old;
+}
+float PlateR::Reverb::calculateTime(float milliSec, int &play, int &rec, int delaySize)
+{
+        float delayInSamples = milliSec * (float)Sample_Rate / 1000.0;
+        play = rec - (int)delayInSamples;
+        if(play<0)play += delaySize;
+        return delayInSamples;
 }
 
 float PlateR::Reverb::longDelay(float input, float(&delayLine)[], int &play, int &rec)

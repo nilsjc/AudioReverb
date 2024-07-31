@@ -124,21 +124,21 @@ void MyFrame::OnSlChanged(wxCommandEvent &event)
             break;
         case 4:
         {
-            float lfo1freq = value/5.0;
+            float lfo1freq = value;
             manager.SetLFO1(lfo1freq);
             label10->SetLabel(std::to_string(lfo1freq));
         }
             break;
         case 5:
         {
-            float lfo2freq = value/5.0;
+            float lfo2freq = value;
             manager.setLFO2(lfo2freq);
             label10->SetLabel(std::to_string(lfo2freq));
         }
             break;
         case 6:
         {
-            float modAmp = value/250.0;
+            float modAmp = value/4.0;
             manager.setMod(modAmp);
             label10->SetLabel(std::to_string(modAmp));
         }
