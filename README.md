@@ -5,7 +5,7 @@ In this repository you will find a stand alone audio reverb based on the well-kn
 [Read more about the reverb here!](https://ccrma.stanford.edu/~dattorro/EffectDesignPart1.pdf)<br>
 A compiled program is available in the root "reverb.exe". Try it out.<br>
 The reverb contains two all pass filter / delays that are modulated by two lfo:s. You can easily make it unstable by setting the modulation depth to max value so be careful...<br>
-In the future i will try to make the code more efficient. My plan is to port the code to an ARM mcu and create an actual eurorack synth module of it, with CV inputs and so on...
+In the future i will try to make the code more efficient. My plan is to port the code to an ARM mcu and create an actual eurorack synth module of it, with CV inputs and so on... i also need to add more functionality to the reverb, like early reflections.<br>
 <br>
 I am using the [PortAudio sound API](https://www.portaudio.com/), made by Ross Bencina.<br>
 The GUI is based on WXWidgets<br>
