@@ -142,6 +142,12 @@ void MyFrame::OnSlChanged(wxCommandEvent &event)
             manager.setMod(modAmp);
             label10->SetLabel(std::to_string(modAmp));
         }
+        case 7:
+        {
+            int frequency = value*20;
+            manager.SetFrequency(frequency);
+            label10->SetLabel(std::to_string(frequency));
+        }
         
         default:
             break;
