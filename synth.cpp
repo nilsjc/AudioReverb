@@ -79,9 +79,23 @@ void Synth::Synth::SetOutputVol(float vol)
     outPutVol = vol;
 }
 
+void Synth::Synth::TrigEnvelope()
+{
+    if(envIsOn==false)
+    {
+        envIsOn = true;
+        envUp = true;
+    }
+    
+}
+
 void Synth::Synth::ClickHi()
 {
     OscResult = UpdateWithLinearInterpolation(oscillatorFreq);
+    if(envIsOn)
+    {
+        UpdateEnvelope();
+    }
 }
 
 void Synth::Synth::InitVars()
@@ -109,7 +123,7 @@ float Synth::Synth::UpdateWithLinearInterpolation(float frequency)
         float first = table[index + waveSelect];
         float second = table[(index + nextWaveSelect)];
         float result = (first * wave1vol) + (second * wave2vol);
-        return result * outPutVol;
+        return result * envelope;
 }
 
 void Synth::Synth::createHarmonics(int start, int length, int harmonic)
@@ -121,4 +135,26 @@ void Synth::Synth::createHarmonics(int start, int length, int harmonic)
         table[x]= 1.0 * sin(angle);
         angle += (6.2831853 / 512)* 2 *harmonic;
     }
+}
+
+void Synth::Synth::UpdateEnvelope()
+{
+    if(envUp)
+    {
+        envelope += AttackTime;
+        if(envelope>=1.0)
+        {
+            envUp = false;
+            envelope = 1.0;
+        }
+    }else{
+        envelope -= DecayTime;
+        if(envelope<=0)
+        {
+            envIsOn = false;
+            envelope = 0.0;
+        }
+    }
+
+
 }

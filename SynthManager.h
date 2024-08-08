@@ -25,10 +25,16 @@ namespace SynthManager
             void SetFrequency(int f);
             void SetHarmonics(int h);
             void SetOutputVol(float v);
+            void TrigEnvelope();
+            void SetAttackTime(float a);
+            void SetDecayTime(float d);
+            void SetMixLevel(float m);
 
         private:
             PlateR::Reverb reverb;
             Synth::Synth synth;
+            float synthLevel;
+            float reverbLevel;
 
     };
 }

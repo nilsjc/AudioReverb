@@ -19,6 +19,7 @@ private:
     void OnSlSynthChanged(wxCommandEvent &event);
     void OnSlChanged(wxCommandEvent &event);
     void StartStopAudio(wxCommandEvent &event);
+    void TrigEnvelope(wxCommandEvent &event);
     bool running = false;
     wxStaticText *label10 = new wxStaticText(this, 20010, "50");
     wxSlider* sliders[8]={
@@ -43,6 +44,7 @@ private:
     };
     wxButton* startStopButton = new wxButton(this, 30001, "start audio");
     wxButton* modulationButton = new wxButton(this, 30002, "mod wave");
+    wxButton* trigEnvButton = new wxButton(this, 30002, "trig env");
 };
 
 MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) : wxFrame(NULL, wxID_ANY, title, pos, size)
@@ -75,8 +77,9 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
 
     //bind buttons
     startStopButton->Bind(wxEVT_BUTTON, &MyFrame::StartStopAudio, this);
+    trigEnvButton->Bind(wxEVT_BUTTON, &MyFrame::TrigEnvelope, this);
 
-    grid->Add(new wxStaticText(this, 20001, ""));
+    grid->Add(new wxStaticText(this, 20001, "mix"));
     grid->Add(new wxStaticText(this, 20002, "time"));
     grid->Add(new wxStaticText(this, 20003, "damp"));
     grid->Add(new wxStaticText(this, 20004, "diffsn"));
@@ -88,6 +91,8 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     grid->Add(new wxStaticText(this, 20008, "Value:"));
     grid->Add(label10, 1, wxEXPAND | wxALL);
     grid->Add(startStopButton);
+    grid->Add(new wxStaticText(this, 90000, ""));
+    grid->Add(trigEnvButton);
     // grid->Add();
     // grid->Add(modulationButton);
 
@@ -113,6 +118,10 @@ void MyFrame::StartStopAudio(wxCommandEvent &event)
         running = true;
         startStopButton->SetLabel("stop audio");
     }
+}
+void MyFrame::TrigEnvelope(wxCommandEvent &event)
+{
+    manager.TrigEnvelope();
 }
 void MyFrame::OnSlSynthChanged(wxCommandEvent &event)
 {
@@ -143,11 +152,14 @@ void MyFrame::OnSlSynthChanged(wxCommandEvent &event)
         break;
         case 3:
         {
-
+            float fvalue = ((float)value)/240000.0;
+            manager.SetAttackTime(fvalue);
         }
         break;
         case 4:
         {
+            float fvalue = ((float)value)/240000.0;
+            manager.SetDecayTime(fvalue);
 
         }
         break;
@@ -178,6 +190,13 @@ void MyFrame::OnSlChanged(wxCommandEvent &event)
     int value = sliders[slider]->GetValue();
     switch (slider)
     {
+        case 0:
+        {
+            float mix = value/100.0;
+            manager.SetMixLevel(mix);
+            label10->SetLabel(std::to_string(mix));
+        }
+        break;
         case 1:
         {
             if(value==100)value=99;

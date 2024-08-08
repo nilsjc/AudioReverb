@@ -2,15 +2,16 @@
 
 float SynthManager::Manager::OutLeft()
 {
-    //return synth.OscResult;
-    return reverb.ResultL;
+    float synthAu = synth.OscResult * synthLevel;
+    float reverbAu = reverb.ResultL * reverbLevel;
+    return synthAu + reverbAu;
 }
 
 float SynthManager::Manager::OutRight()
 {
-    //return synth.OscResult;
-
-    return reverb.ResultR;
+    float synthAu = synth.OscResult * synthLevel;
+    float reverbAu = reverb.ResultR * reverbLevel;
+    return synthAu + reverbAu;
 }
 
 void SynthManager::Manager::Input(float *in)
@@ -85,4 +86,25 @@ void SynthManager::Manager::SetHarmonics(int h)
 void SynthManager::Manager::SetOutputVol(float v)
 {
     synth.SetOutputVol(v);
+}
+
+void SynthManager::Manager::TrigEnvelope()
+{
+    synth.TrigEnvelope();
+}
+
+void SynthManager::Manager::SetAttackTime(float a)
+{
+    synth.AttackTime = a;
+}
+
+void SynthManager::Manager::SetDecayTime(float d)
+{
+    synth.DecayTime = d;
+}
+
+void SynthManager::Manager::SetMixLevel(float m)
+{
+    synthLevel = m;
+    reverbLevel = 1.0 - m;
 }
