@@ -2,27 +2,28 @@
 
 float SynthManager::Manager::OutLeft()
 {
-    return synth.OscResult;
-    //return reverb.ResultL;
+    //return synth.OscResult;
+    return reverb.ResultL;
 }
 
 float SynthManager::Manager::OutRight()
 {
-    return synth.OscResult;
+    //return synth.OscResult;
 
-    //return reverb.ResultR;
+    return reverb.ResultR;
 }
 
 void SynthManager::Manager::Input(float *in)
 {
-    reverb.Input(in[0]);
+    //reverb.Input(in[0]);
+    reverb.Input(synth.OscResult);
 }
 
 void SynthManager::Manager::Tick()
 {
     synth.ClickHi();
-    //reverb.Tick();
-    //reverb.ModTick();
+    reverb.Tick();
+    reverb.ModTick();
 }
 
 void SynthManager::Manager::LoTick()
@@ -74,4 +75,14 @@ void SynthManager::Manager::Init()
 void SynthManager::Manager::SetFrequency(int f)
 {
     synth.SetOscFrequency(f);
+}
+
+void SynthManager::Manager::SetHarmonics(int h)
+{
+    synth.SetHarmonics(h);
+}
+
+void SynthManager::Manager::SetOutputVol(float v)
+{
+    synth.SetOutputVol(v);
 }

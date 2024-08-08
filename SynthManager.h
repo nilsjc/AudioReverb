@@ -23,6 +23,8 @@ namespace SynthManager
             void Init();
             void SetNote1(int f);
             void SetFrequency(int f);
+            void SetHarmonics(int h);
+            void SetOutputVol(float v);
 
         private:
             PlateR::Reverb reverb;

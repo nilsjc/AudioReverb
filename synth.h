@@ -7,22 +7,8 @@ namespace Synth
         public:
             void SetOscFrequency(int f);
             float OscResult;
-            void SetFilterFreq(int f);
-            void SetFilterQ(int q);
-            void SetAmpAttack(int a);
-            void SetAmpDecay(int d);
-            void SetFiltAttack(int a);
-            void SetFiltDecay(int d);
-
-            void SetStage1(int s);
-            void SetStage2(int s);
-            void SetStage3(int s);
-            void SetStage4(int s);
-            void SetStage5(int s);
-            void SetStage6(int s);
-            void SetTempo(int t);
-            void Modulation(int m);
-
+            void SetHarmonics(int h);
+            void SetOutputVol(float vol);
             void ClickHi();
             void ClickLo();
 
@@ -30,8 +16,10 @@ namespace Synth
 
 
         private:
-            float oscillatorFreq = 440.0;
+            float outPutVol = 0.5;
+            float oscillatorFreq = 100.0;
             float UpdateWithLinearInterpolation(float frequency);
+            void createHarmonics(int start, int length, int harmonic);
     };
 }
 #endif

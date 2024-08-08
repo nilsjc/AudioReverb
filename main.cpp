@@ -16,6 +16,7 @@ public:
 private:
     SynthManager::Manager manager;
     AudioStream::Runner runner;
+    void OnSlSynthChanged(wxCommandEvent &event);
     void OnSlChanged(wxCommandEvent &event);
     void StartStopAudio(wxCommandEvent &event);
     bool running = false;
@@ -30,6 +31,16 @@ private:
         new wxSlider(this,10007,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
         new wxSlider(this,10008,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator)
     };
+    wxSlider* synthSliders[8]={
+        new wxSlider(this,10011,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
+        new wxSlider(this,10012,0,0,220,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
+        new wxSlider(this,10013,50,0,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
+        new wxSlider(this,10014,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
+        new wxSlider(this,10015,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
+        new wxSlider(this,10016,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
+        new wxSlider(this,10017,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
+        new wxSlider(this,10018,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator)
+    };
     wxButton* startStopButton = new wxButton(this, 30001, "start audio");
     wxButton* modulationButton = new wxButton(this, 30002, "mod wave");
 };
@@ -40,13 +51,22 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     manager.Init();
 
     // Wxwidgets related stuff
-    wxGridSizer *grid = new wxGridSizer(3, 8, 0, 0);
-    // bind sliders to function
+    wxGridSizer *grid = new wxGridSizer(4, 8, 0, 0);
+    // bind reverb sliders to function
     for(int x=0; x <8; x++)
     {
         sliders[x]->Bind(wxEVT_SLIDER, &MyFrame::OnSlChanged, this);
     }
-    
+    // bind synth sliders to function
+    for(int x=0; x <8; x++)
+    {
+        synthSliders[x]->Bind(wxEVT_SLIDER, &MyFrame::OnSlSynthChanged, this);
+    }
+    // add synth sliders to grid
+    for(int x=0; x <8; x++)
+    {
+        grid->Add(synthSliders[x],1, wxEXPAND | wxALL);
+    }
     // add sliders to grid
     for(int x=0; x <8; x++)
     {
@@ -94,6 +114,64 @@ void MyFrame::StartStopAudio(wxCommandEvent &event)
         startStopButton->SetLabel("stop audio");
     }
 }
+void MyFrame::OnSlSynthChanged(wxCommandEvent &event)
+{
+    int slider = event.GetId() - 10011;
+    int value = synthSliders[slider]->GetValue();
+    switch(slider)
+    {
+        case 0:
+        {
+            if(value==0)value=1;
+            int freq = value;//(value)/15.0;
+            manager.SetFrequency(freq);
+            label10->SetLabel(std::to_string(freq));
+        }
+        break;
+        case 1:
+        {
+            manager.SetHarmonics(value);
+            label10->SetLabel(std::to_string(value));
+        }
+        break;
+        case 2:
+        {
+            float fvalue = ((float)value)/100.0;
+            manager.SetOutputVol(fvalue);
+
+        }
+        break;
+        case 3:
+        {
+
+        }
+        break;
+        case 4:
+        {
+
+        }
+        break;
+        case 5:
+        {
+
+        }
+        break;
+        case 6:
+        {
+
+        }
+        break;
+        case 7:
+        {
+
+        }
+        break;
+        default:
+        break;
+    }
+    event.Skip();
+}
+
 void MyFrame::OnSlChanged(wxCommandEvent &event)
 {
     int slider = event.GetId() - 10001;
@@ -138,15 +216,16 @@ void MyFrame::OnSlChanged(wxCommandEvent &event)
             break;
         case 6:
         {
-            float modAmp = value/4.0;
+            float modAmp = value/5.0;
             manager.setMod(modAmp);
             label10->SetLabel(std::to_string(modAmp));
         }
         case 7:
         {
-            int frequency = value*20;
-            manager.SetFrequency(frequency);
-            label10->SetLabel(std::to_string(frequency));
+            if(value==0)value=1;
+            int freq = value;//(value)/15.0;
+            manager.SetFrequency(freq);
+            label10->SetLabel(std::to_string(freq));
         }
         
         default:
