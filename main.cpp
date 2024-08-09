@@ -20,6 +20,7 @@ private:
     void OnSlChanged(wxCommandEvent &event);
     void StartStopAudio(wxCommandEvent &event);
     void TrigEnvelope(wxCommandEvent &event);
+    void OnKeyDown(wxKeyEvent& event);
     bool running = false;
     wxStaticText *label10 = new wxStaticText(this, 20010, "50");
     wxSlider* sliders[8]={
@@ -53,7 +54,11 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     manager.Init();
 
     // Wxwidgets related stuff
-    wxGridSizer *grid = new wxGridSizer(4, 8, 0, 0);
+    wxGridSizer *grid = new wxGridSizer(5, 8, 0, 0);
+
+    Connect(wxEVT_KEY_DOWN, wxKeyEventHandler(MyFrame::OnKeyDown));
+    //grid->Bind(wxEVT_CHAR_HOOK, &MyFrame::OnKeyDown, this);
+
     // bind reverb sliders to function
     for(int x=0; x <8; x++)
     {
@@ -69,6 +74,14 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     {
         grid->Add(synthSliders[x],1, wxEXPAND | wxALL);
     }
+    grid->Add(new wxStaticText(this, 20011, "freq"));
+    grid->Add(new wxStaticText(this, 20012, "wave"));
+    grid->Add(new wxStaticText(this, 20013, ""));
+    grid->Add(new wxStaticText(this, 20014, "env up"));
+    grid->Add(new wxStaticText(this, 20015, "env down"));
+    grid->Add(new wxStaticText(this, 20016, ""));
+    grid->Add(new wxStaticText(this, 20017, ""));
+    grid->Add(new wxStaticText(this, 20018, ""));
     // add sliders to grid
     for(int x=0; x <8; x++)
     {
@@ -123,6 +136,18 @@ void MyFrame::TrigEnvelope(wxCommandEvent &event)
 {
     manager.TrigEnvelope();
 }
+void MyFrame::OnKeyDown(wxKeyEvent& event)
+{
+
+    int keycode = event.GetKeyCode();
+    label10->SetLabel(std::to_string(keycode));
+    if (keycode == 'q' || keycode == 'Q')
+    {
+        manager.TrigEnvelope();
+    }
+}
+
+
 void MyFrame::OnSlSynthChanged(wxCommandEvent &event)
 {
     int slider = event.GetId() - 10011;
@@ -147,6 +172,7 @@ void MyFrame::OnSlSynthChanged(wxCommandEvent &event)
         {
             float fvalue = ((float)value)/100.0;
             manager.SetOutputVol(fvalue);
+            label10->SetLabel(std::to_string(fvalue));
 
         }
         break;
@@ -154,13 +180,14 @@ void MyFrame::OnSlSynthChanged(wxCommandEvent &event)
         {
             float fvalue = ((float)value)/240000.0;
             manager.SetAttackTime(fvalue);
+            label10->SetLabel(std::to_string(fvalue));
         }
         break;
         case 4:
         {
             float fvalue = ((float)value)/240000.0;
             manager.SetDecayTime(fvalue);
-
+            label10->SetLabel(std::to_string(fvalue));
         }
         break;
         case 5:
