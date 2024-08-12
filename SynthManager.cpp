@@ -103,6 +103,11 @@ void SynthManager::Manager::SetDecayTime(float d)
     synth.DecayTime = d;
 }
 
+void SynthManager::Manager::ChangeReadWave()
+{
+    synth.ChangeReadWave();
+}
+
 void SynthManager::Manager::SetMixLevel(float m)
 {
     synthLevel = m;

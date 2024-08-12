@@ -20,9 +20,10 @@ private:
     void OnSlChanged(wxCommandEvent &event);
     void StartStopAudio(wxCommandEvent &event);
     void TrigEnvelope(wxCommandEvent &event);
+    void ChangeWaveform(wxCommandEvent &event);
     void OnKeyDown(wxKeyEvent& event);
     bool running = false;
-    wxStaticText *label10 = new wxStaticText(this, 20010, "50");
+    wxStaticText *label10 = new wxStaticText(this, 20010, "0");
     wxSlider* sliders[8]={
         new wxSlider(this,10001,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
         new wxSlider(this,10002,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
@@ -44,8 +45,8 @@ private:
         new wxSlider(this,10018,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator)
     };
     wxButton* startStopButton = new wxButton(this, 30001, "start audio");
-    wxButton* modulationButton = new wxButton(this, 30002, "mod wave");
-    wxButton* trigEnvButton = new wxButton(this, 30002, "trig env");
+    wxButton* waveButton = new wxButton(this, 30002, "wave");
+    wxButton* trigEnvButton = new wxButton(this, 30003, "trig env");
 };
 
 MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) : wxFrame(NULL, wxID_ANY, title, pos, size)
@@ -75,10 +76,11 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
         grid->Add(synthSliders[x],1, wxEXPAND | wxALL);
     }
     grid->Add(new wxStaticText(this, 20011, "freq"));
-    grid->Add(new wxStaticText(this, 20012, "wave"));
+    grid->Add(waveButton);
+    //grid->Add(new wxStaticText(this, 20012, "wave"));
     grid->Add(new wxStaticText(this, 20013, ""));
-    grid->Add(new wxStaticText(this, 20014, "env up"));
-    grid->Add(new wxStaticText(this, 20015, "env down"));
+    grid->Add(new wxStaticText(this, 20014, "env\n up"));
+    grid->Add(new wxStaticText(this, 20015, "env\ndown"));
     grid->Add(new wxStaticText(this, 20016, ""));
     grid->Add(new wxStaticText(this, 20017, ""));
     grid->Add(new wxStaticText(this, 20018, ""));
@@ -91,21 +93,25 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     //bind buttons
     startStopButton->Bind(wxEVT_BUTTON, &MyFrame::StartStopAudio, this);
     trigEnvButton->Bind(wxEVT_BUTTON, &MyFrame::TrigEnvelope, this);
+    waveButton->Bind(wxEVT_BUTTON, &MyFrame::ChangeWaveform, this);
 
     grid->Add(new wxStaticText(this, 20001, "mix"));
     grid->Add(new wxStaticText(this, 20002, "time"));
     grid->Add(new wxStaticText(this, 20003, "damp"));
     grid->Add(new wxStaticText(this, 20004, "diffsn"));
-    grid->Add(new wxStaticText(this, 20005, "LFO1 f"));
-    grid->Add(new wxStaticText(this, 20006, "LFO2 f"));
-    grid->Add(new wxStaticText(this, 20007, "depth"));
+    grid->Add(new wxStaticText(this, 20005, "LFO1\nfreq"));
+    grid->Add(new wxStaticText(this, 20006, "LFO2\nfreq"));
+    grid->Add(new wxStaticText(this, 20007, "mod\ndepth"));
     grid->Add(new wxStaticText(this, 20008, ""));
 
-    grid->Add(new wxStaticText(this, 20008, "Value:"));
+    grid->Add(new wxStaticText(this, 30000, "Value:"));
     grid->Add(label10, 1, wxEXPAND | wxALL);
     grid->Add(startStopButton);
-    grid->Add(new wxStaticText(this, 90000, ""));
+    grid->Add(new wxStaticText(this, 30001, ""));
     grid->Add(trigEnvButton);
+    grid->Add(new wxStaticText(this, 30002, ""));
+    grid->Add(new wxStaticText(this,30003, "Press 'Q' for trig\nenv from keyboard."));
+
     // grid->Add();
     // grid->Add(modulationButton);
 
@@ -131,12 +137,19 @@ void MyFrame::StartStopAudio(wxCommandEvent &event)
         running = true;
         startStopButton->SetLabel("stop audio");
     }
+    event.Skip();
 }
 void MyFrame::TrigEnvelope(wxCommandEvent &event)
 {
     manager.TrigEnvelope();
+    event.Skip();
 }
-void MyFrame::OnKeyDown(wxKeyEvent& event)
+void MyFrame::ChangeWaveform(wxCommandEvent &event)
+{
+    manager.ChangeReadWave();
+    event.Skip();
+}
+void MyFrame::OnKeyDown(wxKeyEvent &event)
 {
 
     int keycode = event.GetKeyCode();
@@ -145,6 +158,7 @@ void MyFrame::OnKeyDown(wxKeyEvent& event)
     {
         manager.TrigEnvelope();
     }
+    event.Skip();
 }
 
 
@@ -288,7 +302,7 @@ public:
 };
 bool MyApp::OnInit()
 {
-    MyFrame *frame = new MyFrame("Experimental audio...", wxDefaultPosition, wxDefaultSize);
+    MyFrame *frame = new MyFrame("Synth and Reverb", wxDefaultPosition, wxDefaultSize);
     frame->StartAudio();
     frame->Show(true);
     return true;

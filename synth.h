@@ -12,6 +12,9 @@ namespace Synth
             void TrigEnvelope();
             float AttackTime = 0.01;
             float DecayTime = 0.01;
+            void ChangeReadWave();
+
+
             void ClickHi();
             void ClickLo();
 
@@ -19,6 +22,7 @@ namespace Synth
 
 
         private:
+            bool sineRead = false;
             bool envIsOn = false;
             bool envUp = false;
             float envelope = 0.0;

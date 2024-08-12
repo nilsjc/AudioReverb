@@ -28,6 +28,7 @@ namespace SynthManager
             void TrigEnvelope();
             void SetAttackTime(float a);
             void SetDecayTime(float d);
+            void ChangeReadWave();
             void SetMixLevel(float m);
 
         private:

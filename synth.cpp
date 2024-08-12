@@ -12,6 +12,7 @@ int nextWaveSelect = TableSize;
 float wave1vol = 0.0;
 float wave2vol = 0.0;
 const int mixReso = 32;
+int readIndex = 0;
 const int sinePointTable[512]
 {
 256, 259, 262, 265, 269, 272, 275, 278, 281, 284, 287, 290, 294, 297, 300, 303,
@@ -89,6 +90,11 @@ void Synth::Synth::TrigEnvelope()
     
 }
 
+void Synth::Synth::ChangeReadWave()
+{
+    sineRead ^= true;
+}
+
 void Synth::Synth::ClickHi()
 {
     OscResult = UpdateWithLinearInterpolation(oscillatorFreq);
@@ -118,10 +124,13 @@ float Synth::Synth::UpdateWithLinearInterpolation(float frequency)
         if(phase >= fTableSize)
                 phase -= fTableSize;
 
-        //int index = sinePointTable[i];
-        int index = i;
-        float first = table[index + waveSelect];
-        float second = table[(index + nextWaveSelect)];
+        if(sineRead){
+            readIndex = sinePointTable[i];
+        }else{
+            readIndex = i;
+        }
+        float first = table[readIndex + waveSelect];
+        float second = table[(readIndex + nextWaveSelect)];
         float result = (first * wave1vol) + (second * wave2vol);
         return result * envelope;
 }
