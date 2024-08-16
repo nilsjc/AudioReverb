@@ -55,6 +55,12 @@ void Synth::Synth::SetOscFrequency(int f)
     oscillatorFreq = (float)f;
 }
 
+void Synth::Synth::SetHarmonicsPot(int p)
+{
+    harmonicsPot = p;
+    SetHarmonics(p);
+}
+
 void Synth::Synth::SetHarmonics(int h)
 {
     int ws = 0;
@@ -97,10 +103,19 @@ void Synth::Synth::ChangeReadWave()
 
 void Synth::Synth::ClickHi()
 {
-    OscResult = UpdateWithLinearInterpolation(oscillatorFreq);
+    OscResult = UpdateWithLinearInterpolation(oscillatorFreq + envFMsig);
+}
+
+void Synth::Synth::ClickLo()
+{
     if(envIsOn)
     {
         UpdateEnvelope();
+        envWMsig = envelope * envWM;
+        envWMsig *=100;
+        int envWMint = (int)envWMsig;
+        SetHarmonics(harmonicsPot + envWMint);
+        envFMsig = envelope * envFM;
     }
 }
 

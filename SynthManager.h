@@ -29,6 +29,7 @@ namespace SynthManager
             void SetAttackTime(float a);
             void SetDecayTime(float d);
             void ChangeReadWave();
+            void SetEnvWMod(float wm);
             void SetMixLevel(float m);
 
         private:

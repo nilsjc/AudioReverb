@@ -30,6 +30,7 @@ void SynthManager::Manager::Tick()
 void SynthManager::Manager::LoTick()
 {
     reverb.LoTick();
+    synth.ClickLo();
 }
 
 void SynthManager::Manager::SetSynthVol(float v)
@@ -80,7 +81,7 @@ void SynthManager::Manager::SetFrequency(int f)
 
 void SynthManager::Manager::SetHarmonics(int h)
 {
-    synth.SetHarmonics(h);
+    synth.SetHarmonicsPot(h);
 }
 
 void SynthManager::Manager::SetOutputVol(float v)
@@ -106,6 +107,11 @@ void SynthManager::Manager::SetDecayTime(float d)
 void SynthManager::Manager::ChangeReadWave()
 {
     synth.ChangeReadWave();
+}
+
+void SynthManager::Manager::SetEnvWMod(float wm)
+{
+    synth.envWM = wm;
 }
 
 void SynthManager::Manager::SetMixLevel(float m)

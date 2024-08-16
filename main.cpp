@@ -81,7 +81,7 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     grid->Add(new wxStaticText(this, 20013, ""));
     grid->Add(new wxStaticText(this, 20014, "env\n up"));
     grid->Add(new wxStaticText(this, 20015, "env\ndown"));
-    grid->Add(new wxStaticText(this, 20016, ""));
+    grid->Add(new wxStaticText(this, 20016, "env\nWmod"));
     grid->Add(new wxStaticText(this, 20017, ""));
     grid->Add(new wxStaticText(this, 20018, ""));
     // add sliders to grid
@@ -192,21 +192,23 @@ void MyFrame::OnSlSynthChanged(wxCommandEvent &event)
         break;
         case 3:
         {
-            float fvalue = ((float)value)/240000.0;
+            float fvalue = ((float)value)/1000.0;
             manager.SetAttackTime(fvalue);
             label10->SetLabel(std::to_string(fvalue));
         }
         break;
         case 4:
         {
-            float fvalue = ((float)value)/240000.0;
+            float fvalue = ((float)value)/1000.0;
             manager.SetDecayTime(fvalue);
             label10->SetLabel(std::to_string(fvalue));
         }
         break;
         case 5:
         {
-
+            float fvalue = ((float)value)/100.0;
+            manager.SetEnvWMod(fvalue);
+            label10->SetLabel(std::to_string(fvalue));
         }
         break;
         case 6:
