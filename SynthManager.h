@@ -36,6 +36,7 @@ namespace SynthManager
             void SetNote3(float f);
             void SetNote4(float f);
             void PlayStopSeq(bool p);
+            void SetSeqTempo(float t);
 
         private:
             PlateR::Reverb reverb;

@@ -120,7 +120,7 @@ void Synth::Synth::ClickLo()
     }
     if(SequenceMode)
     {
-        seqTime += 0.002;
+        seqTime += seqTempo;
         if(seqTime >= 1.0)
         {
             seqTime = 0.0;

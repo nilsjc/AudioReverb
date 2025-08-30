@@ -144,3 +144,8 @@ void SynthManager::Manager::PlayStopSeq(bool p)
 {
     synth.SequenceMode = p;
 }
+
+void SynthManager::Manager::SetSeqTempo(float t)
+{
+    synth.seqTempo = t;
+}

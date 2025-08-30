@@ -20,6 +20,7 @@ namespace Synth
             bool SequenceMode = false;
             float seqTime = 0.0;
             int seqStep = 0;
+            float seqTempo = 0.005;
 
 
             void ClickHi();

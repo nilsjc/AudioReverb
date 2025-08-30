@@ -104,7 +104,9 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     trigEnvButton->Bind(wxEVT_BUTTON, &MyFrame::TrigEnvelope, this);
     waveButton->Bind(wxEVT_BUTTON, &MyFrame::ChangeWaveform, this);
     seqButton->Bind(wxEVT_BUTTON, &MyFrame::PlayStopSeq, this);
-
+    
+    grid->Add(new wxStaticText(this, 20009, ""));
+    grid->Add(new wxStaticText(this, 20110, ""));
     grid->Add(new wxStaticText(this, 20001, "mix"));
     grid->Add(new wxStaticText(this, 20002, "time"));
     grid->Add(new wxStaticText(this, 20003, "damp"));
@@ -112,7 +114,7 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     grid->Add(new wxStaticText(this, 20005, "LFO1\nfreq"));
     grid->Add(new wxStaticText(this, 20006, "LFO2\nfreq"));
     grid->Add(new wxStaticText(this, 20007, "mod\ndepth"));
-    grid->Add(new wxStaticText(this, 20008, ""));
+    grid->Add(new wxStaticText(this, 20008, "seq tempo"));
 
     grid->Add(new wxStaticText(this, 30000, "Value:"));
     grid->Add(label10, 1, wxEXPAND | wxALL);
@@ -330,8 +332,8 @@ void MyFrame::OnSlChanged(wxCommandEvent &event)
         case 7:
         {
             if(value==0)value=1;
-            int freq = value;//(value)/15.0;
-            manager.SetFrequency(freq);
+            float freq = value / 11000.0;
+            manager.SetSeqTempo(freq);
             label10->SetLabel(std::to_string(freq));
         }
         
