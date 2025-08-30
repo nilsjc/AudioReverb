@@ -21,10 +21,12 @@ private:
     void StartStopAudio(wxCommandEvent &event);
     void TrigEnvelope(wxCommandEvent &event);
     void ChangeWaveform(wxCommandEvent &event);
+    void PlayStopSeq(wxCommandEvent &event);
     void OnKeyDown(wxKeyEvent& event);
     bool running = false;
+    int seqStep = 0;
     wxStaticText *label10 = new wxStaticText(this, 20010, "0");
-    wxSlider* sliders[8]={
+    wxSlider* sliders[10]={
         new wxSlider(this,10001,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
         new wxSlider(this,10002,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
         new wxSlider(this,10003,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
@@ -32,9 +34,11 @@ private:
         new wxSlider(this,10005,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
         new wxSlider(this,10006,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
         new wxSlider(this,10007,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
-        new wxSlider(this,10008,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator)
+        new wxSlider(this,10008,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
+        new wxSlider(this,10009,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
+        new wxSlider(this,10010,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator)
     };
-    wxSlider* synthSliders[8]={
+    wxSlider* synthSliders[10]={
         new wxSlider(this,10011,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
         new wxSlider(this,10012,0,0,220,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
         new wxSlider(this,10013,50,0,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
@@ -42,11 +46,14 @@ private:
         new wxSlider(this,10015,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
         new wxSlider(this,10016,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
         new wxSlider(this,10017,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
-        new wxSlider(this,10018,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator)
-    };
+        new wxSlider(this,10018,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
+        new wxSlider(this,10019,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator),
+        new wxSlider(this,10020,50,1,100,wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator)
+        };
     wxButton* startStopButton = new wxButton(this, 30001, "start audio");
     wxButton* waveButton = new wxButton(this, 30002, "wave");
     wxButton* trigEnvButton = new wxButton(this, 30003, "trig env");
+    wxButton* seqButton = new wxButton(this, 30004, "start seq");
 };
 
 MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) : wxFrame(NULL, wxID_ANY, title, pos, size)
@@ -55,23 +62,23 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     manager.Init();
 
     // Wxwidgets related stuff
-    wxGridSizer *grid = new wxGridSizer(5, 8, 0, 0);
+    wxGridSizer *grid = new wxGridSizer(5, 10, 0, 0);
 
     Connect(wxEVT_KEY_DOWN, wxKeyEventHandler(MyFrame::OnKeyDown));
     //grid->Bind(wxEVT_CHAR_HOOK, &MyFrame::OnKeyDown, this);
 
     // bind reverb sliders to function
-    for(int x=0; x <8; x++)
+    for(int x=0; x <10; x++)
     {
         sliders[x]->Bind(wxEVT_SLIDER, &MyFrame::OnSlChanged, this);
     }
     // bind synth sliders to function
-    for(int x=0; x <8; x++)
+    for(int x=0; x <10; x++)
     {
         synthSliders[x]->Bind(wxEVT_SLIDER, &MyFrame::OnSlSynthChanged, this);
     }
     // add synth sliders to grid
-    for(int x=0; x <8; x++)
+    for(int x=0; x <10; x++)
     {
         grid->Add(synthSliders[x],1, wxEXPAND | wxALL);
     }
@@ -82,8 +89,10 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     grid->Add(new wxStaticText(this, 20014, "env\n up"));
     grid->Add(new wxStaticText(this, 20015, "env\ndown"));
     grid->Add(new wxStaticText(this, 20016, "env\nWmod"));
-    grid->Add(new wxStaticText(this, 20017, ""));
-    grid->Add(new wxStaticText(this, 20018, ""));
+    grid->Add(new wxStaticText(this, 20017, "step 1"));
+    grid->Add(new wxStaticText(this, 20018, "step 2"));
+    grid->Add(new wxStaticText(this, 20020, "step 3"));
+    grid->Add(new wxStaticText(this, 20021, "step 4"));
     // add sliders to grid
     for(int x=0; x <8; x++)
     {
@@ -94,6 +103,7 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     startStopButton->Bind(wxEVT_BUTTON, &MyFrame::StartStopAudio, this);
     trigEnvButton->Bind(wxEVT_BUTTON, &MyFrame::TrigEnvelope, this);
     waveButton->Bind(wxEVT_BUTTON, &MyFrame::ChangeWaveform, this);
+    seqButton->Bind(wxEVT_BUTTON, &MyFrame::PlayStopSeq, this);
 
     grid->Add(new wxStaticText(this, 20001, "mix"));
     grid->Add(new wxStaticText(this, 20002, "time"));
@@ -110,6 +120,7 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     grid->Add(new wxStaticText(this, 30001, ""));
     grid->Add(trigEnvButton);
     grid->Add(new wxStaticText(this, 30002, ""));
+    grid->Add(seqButton);
     grid->Add(new wxStaticText(this,30003, "Press 'Q' for trig\nenv from keyboard."));
 
     // grid->Add();
@@ -149,6 +160,21 @@ void MyFrame::ChangeWaveform(wxCommandEvent &event)
     manager.ChangeReadWave();
     event.Skip();
 }
+void MyFrame::PlayStopSeq(wxCommandEvent &event)
+{
+    static bool seqRunning = false;
+    if(seqRunning==false)
+    {
+        seqRunning = true;
+        seqButton->SetLabel("stop seq");
+        manager.PlayStopSeq(true);
+    }else{
+        seqRunning = false;
+        seqButton->SetLabel("start seq");
+        manager.PlayStopSeq(false);
+    }
+    event.Skip();
+}   
 void MyFrame::OnKeyDown(wxKeyEvent &event)
 {
 
@@ -213,12 +239,31 @@ void MyFrame::OnSlSynthChanged(wxCommandEvent &event)
         break;
         case 6:
         {
+            float fvalue = ((float)value)/100.0;
+            manager.SetNote1(fvalue);
+            label10->SetLabel(std::to_string(fvalue));
 
         }
         break;
         case 7:
         {
-
+            float fvalue = ((float)value)/100.0;
+            manager.SetNote2(fvalue);
+            label10->SetLabel(std::to_string(fvalue));
+        }
+        break;
+        case 8:
+        {
+            float fvalue = ((float)value)/100.0;
+            manager.SetNote3(fvalue);
+            label10->SetLabel(std::to_string(fvalue));
+        }
+        break;
+        case 9:
+        {
+            float fvalue = ((float)value)/100.0;
+            manager.SetNote4(fvalue);
+            label10->SetLabel(std::to_string(fvalue));
         }
         break;
         default:

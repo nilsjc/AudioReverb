@@ -119,3 +119,28 @@ void SynthManager::Manager::SetMixLevel(float m)
     synthLevel = m;
     reverbLevel = 1.0 - m;
 }
+
+void SynthManager::Manager::SetNote1(float f)
+{
+    synth.noteFreqArray[0] = f;
+}
+
+void SynthManager::Manager::SetNote2(float f)
+{
+    synth.noteFreqArray[1] = f;
+}
+
+void SynthManager::Manager::SetNote3(float f)
+{
+    synth.noteFreqArray[2] = f;
+}
+
+void SynthManager::Manager::SetNote4(float f)
+{
+    synth.noteFreqArray[3] = f;
+}
+
+void SynthManager::Manager::PlayStopSeq(bool p)
+{
+    synth.SequenceMode = p;
+}

@@ -31,6 +31,11 @@ namespace SynthManager
             void ChangeReadWave();
             void SetEnvWMod(float wm);
             void SetMixLevel(float m);
+            void SetNote1(float f);
+            void SetNote2(float f);
+            void SetNote3(float f);
+            void SetNote4(float f);
+            void PlayStopSeq(bool p);
 
         private:
             PlateR::Reverb reverb;

@@ -13,6 +13,7 @@ float wave1vol = 0.0;
 float wave2vol = 0.0;
 const int mixReso = 32;
 int readIndex = 0;
+float seqCV = 0.0;
 const int sinePointTable[512]
 {
 256, 259, 262, 265, 269, 272, 275, 278, 281, 284, 287, 290, 294, 297, 300, 303,
@@ -103,7 +104,7 @@ void Synth::Synth::ChangeReadWave()
 
 void Synth::Synth::ClickHi()
 {
-    OscResult = UpdateWithLinearInterpolation(oscillatorFreq + envFMsig);
+    OscResult = UpdateWithLinearInterpolation(oscillatorFreq + envFMsig + seqCV);
 }
 
 void Synth::Synth::ClickLo()
@@ -116,6 +117,20 @@ void Synth::Synth::ClickLo()
         int envWMint = (int)envWMsig;
         SetHarmonics(harmonicsPot + envWMint);
         envFMsig = envelope * envFM;
+    }
+    if(SequenceMode)
+    {
+        seqTime += 0.002;
+        if(seqTime >= 1.0)
+        {
+            seqTime = 0.0;
+            seqStep++;
+            if(seqStep > 3)seqStep = 0;
+            seqCV = noteFreqArray[seqStep] * 255.0;
+            TrigEnvelope();
+        }
+    }else{
+        seqCV = 0.0;
     }
 }
 

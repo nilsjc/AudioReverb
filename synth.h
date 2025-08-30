@@ -15,7 +15,11 @@ namespace Synth
             float DecayTime = 0.01;
             float envFM = 0.0;
             float envWM = 0.0;
+            float noteFreqArray[4] = {50.0, 50.0, 50.0, 50.0};
             void ChangeReadWave();
+            bool SequenceMode = false;
+            float seqTime = 0.0;
+            int seqStep = 0;
 
 
             void ClickHi();
@@ -31,6 +35,7 @@ namespace Synth
             float envelope = 0.0;
             float outPutVol = 0.5;
             float oscillatorFreq = 100.0;
+            
             float envFMsig = 0.0;
             float envWMsig = 0.0;
             int harmonicsPot = 0;
