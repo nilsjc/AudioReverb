@@ -94,7 +94,7 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     grid->Add(new wxStaticText(this, 20020, "step 3"));
     grid->Add(new wxStaticText(this, 20021, "step 4"));
     // add sliders to grid
-    for(int x=0; x <8; x++)
+    for(int x=0; x <10; x++)
     {
         grid->Add(sliders[x],1, wxEXPAND | wxALL);
     }
@@ -105,8 +105,6 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     waveButton->Bind(wxEVT_BUTTON, &MyFrame::ChangeWaveform, this);
     seqButton->Bind(wxEVT_BUTTON, &MyFrame::PlayStopSeq, this);
     
-    grid->Add(new wxStaticText(this, 20009, ""));
-    grid->Add(new wxStaticText(this, 20110, ""));
     grid->Add(new wxStaticText(this, 20001, "mix"));
     grid->Add(new wxStaticText(this, 20002, "time"));
     grid->Add(new wxStaticText(this, 20003, "damp"));
@@ -115,6 +113,8 @@ MyFrame::MyFrame(const wxString &title, const wxPoint &pos, const wxSize &size) 
     grid->Add(new wxStaticText(this, 20006, "LFO2\nfreq"));
     grid->Add(new wxStaticText(this, 20007, "mod\ndepth"));
     grid->Add(new wxStaticText(this, 20008, "seq tempo"));
+    grid->Add(new wxStaticText(this, 20009, ""));
+    grid->Add(new wxStaticText(this, 20110, ""));
 
     grid->Add(new wxStaticText(this, 30000, "Value:"));
     grid->Add(label10, 1, wxEXPAND | wxALL);
@@ -199,9 +199,14 @@ void MyFrame::OnSlSynthChanged(wxCommandEvent &event)
         case 0:
         {
             if(value==0)value=1;
-            int freq = value;//(value)/15.0;
-            manager.SetFrequency(freq);
-            label10->SetLabel(std::to_string(freq));
+            int freq = value * 100;//(value)/15.0;
+            // Map value (0-100) exponentially to range 15-1000
+            double min = 15.0;
+            double max = 1000.0;
+            double norm = value / 100.0; // normalize to 0-1
+            int expValue = (int)(min * pow(max/min, norm)); // exponential mapping
+            manager.SetFrequency(expValue);
+            label10->SetLabel(std::to_string(expValue));
         }
         break;
         case 1:
@@ -239,6 +244,7 @@ void MyFrame::OnSlSynthChanged(wxCommandEvent &event)
             label10->SetLabel(std::to_string(fvalue));
         }
         break;
+        // sequencer note values 1 - 4
         case 6:
         {
             float fvalue = ((float)value)/100.0;
@@ -329,14 +335,15 @@ void MyFrame::OnSlChanged(wxCommandEvent &event)
             manager.setMod(modAmp);
             label10->SetLabel(std::to_string(modAmp));
         }
+            break;
         case 7:
         {
             if(value==0)value=1;
-            float freq = value / 11000.0;
+            float freq = value / 10000.0;
             manager.SetSeqTempo(freq);
             label10->SetLabel(std::to_string(freq));
         }
-        
+            break;
         default:
             break;
     }
