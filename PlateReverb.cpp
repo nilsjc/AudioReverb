@@ -46,7 +46,7 @@ void PlateR::Reverb::Input(float inp)
     // pipe2: mod apf -> delay -> lpf -> apf -> delay
     float pipe2inp = inp + (pipe1 * Gain);
     //pipe2 = allPass(pipe2inp, (0.7 + modWave2), mod2ring, mod2play, mod2rec);
-    pipe2 = modAllPass(pipe1inp, 0.7, mod2ring, mod2play, mod2rec, mod2ringSize, delayInSamples2);
+    pipe2 = modAllPass(pipe2inp, 0.7, mod2ring, mod2play, mod2rec, mod2ringSize, delayInSamples2);
     pipe2 = longDelay(pipe2, ld3ring, ld3play, ld3rec);
     pipe2 = loPass2(pipe2, Damping);
     pipe2 = allPass(pipe2, 0.5, ap6ring, ap6play, ap6rec);
