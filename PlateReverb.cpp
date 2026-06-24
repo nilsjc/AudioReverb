@@ -35,18 +35,18 @@ void PlateR::Reverb::Input(float inp)
     inp = allPass(inp, 0.625,ap3ring, ap3play, ap3rec);
     inp = allPass(inp, 0.625, ap4ring, ap4play, ap4rec);
 
-    // pipe1: mod apf -> delay -> lpf -> apf -> delay
+        // pipe1: mod apf -> delay -> lpf -> apf -> delay
     float pipe1inp = inp + (pipe2 * Gain);
-    //pipe1 = allPass(pipe1inp, (0.7 + modWave1), mod1ring, mod1play, mod1rec);
+        //pipe1 = allPass(pipe1inp, (0.7 + modWave1), mod1ring, mod1play, mod1rec);
     pipe1 = modAllPass(pipe1inp, 0.7, mod1ring, mod1play, mod1rec, mod1ringSize, delayInSamples1);
     pipe1 = longDelay(pipe1, ld1ring, ld1play, ld1rec);
     pipe1 = loPass1(pipe1, Damping);
     pipe1 = allPass(pipe1, 0.5, ap5ring, ap5play, ap5rec);
     pipe1 = longDelay(pipe1, ld2ring, ld2play, ld2rec);
-    // pipe2: mod apf -> delay -> lpf -> apf -> delay
+        // pipe2: mod apf -> delay -> lpf -> apf -> delay
     float pipe2inp = inp + (pipe1 * Gain);
-    //pipe2 = allPass(pipe2inp, (0.7 + modWave2), mod2ring, mod2play, mod2rec);
-    pipe2 = modAllPass(pipe1inp, 0.7, mod2ring, mod2play, mod2rec, mod2ringSize, delayInSamples2);
+        //pipe2 = allPass(pipe2inp, (0.7 + modWave2), mod2ring, mod2play, mod2rec);
+    pipe2 = modAllPass(pipe2inp, 0.7, mod2ring, mod2play, mod2rec, mod2ringSize, delayInSamples2);
     pipe2 = longDelay(pipe2, ld3ring, ld3play, ld3rec);
     pipe2 = loPass2(pipe2, Damping);
     pipe2 = allPass(pipe2, 0.5, ap6ring, ap6play, ap6rec);
